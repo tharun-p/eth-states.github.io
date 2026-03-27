@@ -289,6 +289,70 @@ After the top-up is applied, there is **no new activation queue** if the validat
 
 ---
 
+## What “top-ups are still subject to the activation period” means
+
+This wording can be confusing.
+
+It does **not** mean an already active validator has to activate again.
+
+What it means is:
+
+- the **newly deposited ETH** does not become usable immediately
+- the top-up still enters **`pending_deposits`**
+- it is then processed under the same **deposit-processing and activation-side churn limits** used after Pectra / Electra
+- only when that pending deposit is applied does the existing validator balance increase
+
+So the delay applies to the **new ETH amount**, not to the validator restarting its lifecycle.
+
+### Plain-English interpretation
+
+For an already active validator:
+
+```text
+validator stays active
+→ top-up tx is included
+→ top-up waits in pending_deposits
+→ top-up is processed
+→ validator balance increases
+```
+
+There is **no second validator activation ceremony**.
+
+### Why people call it the “activation period”
+
+After Pectra / Electra, the protocol meters onboarding and deposit application by **ETH amount**, not just by validator count.
+
+That is why docs say:
+
+- the queue “churns by ETH amount instead of validator count”
+- top-ups are still subject to the activation period
+
+Operationally, that means the top-up can still wait because of:
+
+- the `pending_deposits` queue
+- the per-epoch deposit processing cap
+- the activation / exit churn budget
+
+### Clean distinction
+
+**Already active validator**
+- stays active the whole time
+- top-up just adds balance once processed
+
+**Not-yet-active validator**
+- top-up can help it reach the minimum activation balance
+- after that, the validator still follows the normal activation path
+
+> **Note**
+> A top-up is delayed as **new incoming stake**, not as a validator reactivation.  
+> The validator does not “start over”; only the newly added ETH waits to be processed.
+
+> **Tip**
+> For operator UX, think of a top-up as **queued stake**, not a **queued validator**.  
+> That mental model avoids most confusion around “activation period” wording.
+
+---
+
 ## Top-up state transitions
 
 ### 1) Execution inclusion
