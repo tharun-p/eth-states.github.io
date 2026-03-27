@@ -29,92 +29,97 @@ There are **2 waiting stages that matter**:
 
 ## Diagram
 
-<div style="overflow-x:auto; background:#0f172a; border-radius:16px; padding:20px; border:1px solid #334155; margin:20px 0;">
-<svg viewBox="0 0 1480 760" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ethereum staking after Pectra flow">
+<div style="overflow-x:auto; margin:20px 0;">
+<svg viewBox="0 0 1440 700" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ethereum staking after Pectra flow">
   <defs>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0,0 L12,6 L0,12 z" fill="#93c5fd"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#64748b"/>
     </marker>
   </defs>
 
-  <rect x="24" y="20" rx="14" ry="14" width="300" height="42" fill="#172554" stroke="#60a5fa"/>
-  <text x="42" y="47" font-size="22" fill="#dbeafe" font-family="Arial, sans-serif" font-weight="700">Execution inclusion</text>
+  <!-- Background -->
+  <rect x="20" y="20" width="1400" height="660" rx="18" fill="#ffffff" stroke="#e2e8f0"/>
 
-  <rect x="370" y="20" rx="14" ry="14" width="330" height="42" fill="#3f2a13" stroke="#f59e0b"/>
-  <text x="388" y="47" font-size="22" fill="#ffedd5" font-family="Arial, sans-serif" font-weight="700">Explicit pending queue</text>
+  <!-- Section labels -->
+  <rect x="70" y="60" width="250" height="34" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="88" y="82" font-size="20" fill="#1e3a8a" font-family="Arial, sans-serif" font-weight="700">Execution inclusion</text>
 
-  <rect x="760" y="20" rx="14" ry="14" width="690" height="42" fill="#163322" stroke="#4ade80"/>
-  <text x="778" y="47" font-size="22" fill="#dcfce7" font-family="Arial, sans-serif" font-weight="700">Activation flow</text>
+  <rect x="390" y="60" width="300" height="34" rx="10" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="408" y="82" font-size="20" fill="#9a3412" font-family="Arial, sans-serif" font-weight="700">Explicit pending queue</text>
 
-  <rect x="24" y="100" rx="18" ry="18" width="245" height="128" fill="#1e293b" stroke="#60a5fa"/>
-  <text x="44" y="136" font-size="26" fill="#eff6ff" font-family="Arial, sans-serif" font-weight="700">1. Deposit tx included</text>
-  <text x="44" y="168" font-size="18" fill="#cbd5e1" font-family="Arial, sans-serif">Tx is in a valid EL block</text>
-  <text x="44" y="196" font-size="18" fill="#cbd5e1" font-family="Arial, sans-serif">If the block finalizes, tx finalizes</text>
-  <text x="44" y="220" font-size="17" fill="#93c5fd" font-family="Arial, sans-serif">Not a queue</text>
+  <rect x="760" y="60" width="560" height="34" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="778" y="82" font-size="20" fill="#166534" font-family="Arial, sans-serif" font-weight="700">Activation flow</text>
 
-  <rect x="332" y="100" rx="18" ry="18" width="260" height="128" fill="#33210f" stroke="#f59e0b"/>
-  <text x="352" y="136" font-size="26" fill="#fff7ed" font-family="Arial, sans-serif" font-weight="700">2. pending_deposits</text>
-  <text x="352" y="168" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">Explicit queue in beacon state</text>
-  <text x="352" y="196" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">Deposit appended by CL processing</text>
-  <text x="352" y="220" font-size="17" fill="#fdba74" font-family="Arial, sans-serif">First real waiting stage</text>
+  <!-- Top row -->
+  <rect x="70" y="130" width="240" height="120" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="90" y="165" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">1. Deposit tx included</text>
+  <text x="90" y="195" font-size="16" fill="#475569" font-family="Arial, sans-serif">Tx is in a valid EL block</text>
+  <text x="90" y="220" font-size="16" fill="#475569" font-family="Arial, sans-serif">If the block finalizes, tx finalizes</text>
+  <text x="90" y="242" font-size="16" fill="#2563eb" font-family="Arial, sans-serif">Not a queue</text>
 
-  <rect x="654" y="100" rx="18" ry="18" width="280" height="128" fill="#1e293b" stroke="#60a5fa"/>
-  <text x="674" y="136" font-size="26" fill="#eff6ff" font-family="Arial, sans-serif" font-weight="700">3. Deposit applied</text>
-  <text x="674" y="168" font-size="18" fill="#cbd5e1" font-family="Arial, sans-serif">Validator created or balance updated</text>
-  <text x="674" y="196" font-size="18" fill="#cbd5e1" font-family="Arial, sans-serif">Balance may already be visible</text>
-  <text x="674" y="220" font-size="17" fill="#93c5fd" font-family="Arial, sans-serif">Still not active</text>
+  <rect x="390" y="130" width="240" height="120" rx="14" fill="#ffffff" stroke="#fdba74"/>
+  <text x="410" y="165" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">2. pending_deposits</text>
+  <text x="410" y="195" font-size="16" fill="#475569" font-family="Arial, sans-serif">Explicit queue in beacon state</text>
+  <text x="410" y="220" font-size="16" fill="#475569" font-family="Arial, sans-serif">Deposit appended by CL processing</text>
+  <text x="410" y="242" font-size="16" fill="#c2410c" font-family="Arial, sans-serif">First real waiting stage</text>
 
-  <rect x="996" y="100" rx="18" ry="18" width="280" height="128" fill="#163322" stroke="#4ade80"/>
-  <text x="1016" y="136" font-size="26" fill="#f0fdf4" font-family="Arial, sans-serif" font-weight="700">4. Enter activation queue</text>
-  <text x="1016" y="168" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">activation_eligibility_epoch set</text>
-  <text x="1016" y="196" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">Implicit queue begins here</text>
-  <text x="1016" y="220" font-size="17" fill="#86efac" font-family="Arial, sans-serif">Not a separate list</text>
+  <rect x="710" y="130" width="240" height="120" rx="14" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="730" y="165" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">3. Deposit applied</text>
+  <text x="730" y="195" font-size="16" fill="#475569" font-family="Arial, sans-serif">Validator created or updated</text>
+  <text x="730" y="220" font-size="16" fill="#475569" font-family="Arial, sans-serif">Balance may already be visible</text>
+  <text x="730" y="242" font-size="16" fill="#2563eb" font-family="Arial, sans-serif">Still not active</text>
 
-  <rect x="1298" y="100" rx="18" ry="18" width="158" height="128" fill="#163322" stroke="#4ade80"/>
-  <text x="1318" y="136" font-size="26" fill="#f0fdf4" font-family="Arial, sans-serif" font-weight="700">5. Wait</text>
-  <text x="1318" y="168" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">Need finalization</text>
-  <text x="1318" y="196" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">and churn room</text>
+  <rect x="1030" y="130" width="240" height="120" rx="14" fill="#ffffff" stroke="#86efac"/>
+  <text x="1050" y="165" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">4. Enter activation queue</text>
+  <text x="1050" y="195" font-size="16" fill="#475569" font-family="Arial, sans-serif">activation_eligibility_epoch set</text>
+  <text x="1050" y="220" font-size="16" fill="#475569" font-family="Arial, sans-serif">Implicit queue begins here</text>
+  <text x="1050" y="242" font-size="16" fill="#15803d" font-family="Arial, sans-serif">Not a separate list</text>
 
-  <rect x="1140" y="324" rx="18" ry="18" width="280" height="118" fill="#163322" stroke="#4ade80"/>
-  <text x="1160" y="360" font-size="26" fill="#f0fdf4" font-family="Arial, sans-serif" font-weight="700">6. activation_epoch set</text>
-  <text x="1160" y="392" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">Activation scheduled ahead</text>
-  <text x="1160" y="418" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">by protocol rules</text>
+  <!-- Arrows -->
+  <path d="M310 190 L390 190" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M630 190 L710 190" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M950 190 L1030 190" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
 
-  <rect x="1140" y="530" rx="18" ry="18" width="280" height="108" fill="#14532d" stroke="#86efac"/>
-  <text x="1242" y="588" font-size="34" fill="#f0fdf4" font-family="Arial, sans-serif" font-weight="800">7. ACTIVE</text>
+  <!-- Right side -->
+  <rect x="1090" y="320" width="220" height="96" rx="14" fill="#ffffff" stroke="#86efac"/>
+  <text x="1110" y="355" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">5. Wait</text>
+  <text x="1110" y="383" font-size="16" fill="#475569" font-family="Arial, sans-serif">Need finalization</text>
+  <text x="1110" y="405" font-size="16" fill="#475569" font-family="Arial, sans-serif">and churn room</text>
 
-  <path d="M269 164 L332 164" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M592 164 L654 164" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M934 164 L996 164" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1276 164 L1298 164" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1377 228 L1377 324" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
-  <path d="M1280 442 L1280 530" stroke="#93c5fd" stroke-width="5" fill="none" marker-end="url(#arrow)"/>
+  <rect x="1090" y="470" width="220" height="96" rx="14" fill="#ffffff" stroke="#86efac"/>
+  <text x="1110" y="505" font-size="24" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">6. activation_epoch set</text>
+  <text x="1110" y="533" font-size="16" fill="#475569" font-family="Arial, sans-serif">Activation scheduled</text>
+  <text x="1110" y="555" font-size="16" fill="#475569" font-family="Arial, sans-serif">by protocol rules</text>
 
-  <rect x="24" y="290" rx="18" ry="18" width="1040" height="390" fill="#0b1220" stroke="#334155"/>
-  <text x="44" y="330" font-size="28" fill="#e2e8f0" font-family="Arial, sans-serif" font-weight="700">Queue definitions and limits</text>
+  <rect x="1090" y="610" width="220" height="50" rx="14" fill="#f0fdf4" stroke="#86efac"/>
+  <text x="1170" y="643" font-size="26" fill="#166534" font-family="Arial, sans-serif" font-weight="800">7. ACTIVE</text>
 
-  <rect x="44" y="360" rx="14" ry="14" width="470" height="290" fill="#33210f" stroke="#f59e0b"/>
-  <text x="64" y="396" font-size="24" fill="#fff7ed" font-family="Arial, sans-serif" font-weight="700">A. pending_deposits</text>
-  <text x="64" y="432" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">• Explicit queue: state.pending_deposits</text>
-  <text x="64" y="464" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">• Storage limit: 134,217,728</text>
-  <text x="64" y="496" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">• Processing cap: 16 per epoch</text>
-  <text x="64" y="528" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">• Also bounded by activation/exit churn</text>
-  <text x="64" y="560" font-size="18" fill="#fed7aa" font-family="Arial, sans-serif">• Deposit may wait here even after EL finality</text>
+  <path d="M1270 250 L1270 320" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1200 416 L1200 470" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1200 566 L1200 610" stroke="#94a3b8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
 
-  <rect x="540" y="360" rx="14" ry="14" width="500" height="290" fill="#163322" stroke="#4ade80"/>
-  <text x="560" y="396" font-size="24" fill="#f0fdf4" font-family="Arial, sans-serif" font-weight="700">B. Activation queue</text>
-  <text x="560" y="432" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">• Implicit queue, not a dedicated state list</text>
-  <text x="560" y="464" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">• Starts when activation_eligibility_epoch is set</text>
-  <text x="560" y="496" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">• Then waits for finalization and churn</text>
-  <text x="560" y="528" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">• Throughput cap: 256 ETH per epoch</text>
-  <text x="560" y="560" font-size="18" fill="#bbf7d0" font-family="Arial, sans-serif">• For 32 ETH validators, roughly 8 at cap</text>
+  <!-- Bottom cards -->
+  <rect x="70" y="320" width="450" height="250" rx="16" fill="#fff7ed" stroke="#fed7aa"/>
+  <text x="95" y="360" font-size="28" fill="#9a3412" font-family="Arial, sans-serif" font-weight="700">A. pending_deposits</text>
+  <text x="95" y="396" font-size="18" fill="#7c2d12" font-family="Arial, sans-serif">• Explicit queue: state.pending_deposits</text>
+  <text x="95" y="430" font-size="18" fill="#7c2d12" font-family="Arial, sans-serif">• Storage limit: 134,217,728</text>
+  <text x="95" y="464" font-size="18" fill="#7c2d12" font-family="Arial, sans-serif">• Processing cap: 16 per epoch</text>
+  <text x="95" y="498" font-size="18" fill="#7c2d12" font-family="Arial, sans-serif">• Also bounded by activation/exit churn</text>
+  <text x="95" y="532" font-size="18" fill="#7c2d12" font-family="Arial, sans-serif">• Deposit may wait here after EL finality</text>
 
-  <rect x="1092" y="474" rx="14" ry="14" width="340" height="176" fill="#172554" stroke="#60a5fa"/>
-  <text x="1112" y="510" font-size="22" fill="#dbeafe" font-family="Arial, sans-serif" font-weight="700">Important timing detail</text>
-  <text x="1112" y="544" font-size="18" fill="#bfdbfe" font-family="Arial, sans-serif">Deposit can be applied first,</text>
-  <text x="1112" y="572" font-size="18" fill="#bfdbfe" font-family="Arial, sans-serif">while activation_eligibility_epoch</text>
-  <text x="1112" y="600" font-size="18" fill="#bfdbfe" font-family="Arial, sans-serif">is still FAR_FUTURE until the next</text>
-  <text x="1112" y="628" font-size="18" fill="#bfdbfe" font-family="Arial, sans-serif">registry-updates pass.</text>
+  <rect x="560" y="320" width="460" height="250" rx="16" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="585" y="360" font-size="28" fill="#166534" font-family="Arial, sans-serif" font-weight="700">B. Activation queue</text>
+  <text x="585" y="396" font-size="18" fill="#166534" font-family="Arial, sans-serif">• Implicit queue, not a dedicated state list</text>
+  <text x="585" y="430" font-size="18" fill="#166534" font-family="Arial, sans-serif">• Starts when activation_eligibility_epoch is set</text>
+  <text x="585" y="464" font-size="18" fill="#166534" font-family="Arial, sans-serif">• Then waits for finalization and churn</text>
+  <text x="585" y="498" font-size="18" fill="#166534" font-family="Arial, sans-serif">• Throughput cap: 256 ETH per epoch</text>
+  <text x="585" y="532" font-size="18" fill="#166534" font-family="Arial, sans-serif">• Roughly 8 × 32 ETH validators at cap</text>
+
+  <!-- Timing note -->
+  <rect x="560" y="590" width="750" height="56" rx="12" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="585" y="624" font-size="18" fill="#334155" font-family="Arial, sans-serif">
+    Timing note: deposit can be applied first, while activation_eligibility_epoch remains FAR_FUTURE until the next registry-updates pass.
+  </text>
 </svg>
 </div>
 
