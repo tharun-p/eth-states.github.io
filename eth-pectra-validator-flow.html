@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ethereum Staking after Pectra — Deposit to Active Validator</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#121933;
+      --panel2:#0f1530;
+      --text:#e8ecf8;
+      --muted:#aeb8d4;
+      --line:#6f7fb8;
+      --accent:#8ab4ff;
+      --good:#7ee787;
+      --warn:#f2cc60;
+      --queue:#ffb86b;
+      --danger:#ff8a8a;
+      --shadow: 0 8px 30px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:linear-gradient(180deg, #0a0f1d 0%, #0d1328 100%);
+      color:var(--text);
+    }
+    .wrap{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 24px 60px;
+    }
+    h1{
+      margin:0 0 8px;
+      font-size: 34px;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:16px;
+      margin-bottom: 22px;
+      max-width: 980px;
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .diagram{
+      padding: 18px;
+      background:
+        radial-gradient(1000px 280px at 10% 0%, rgba(138,180,255,.08), transparent 60%),
+        radial-gradient(1200px 400px at 100% 0%, rgba(126,231,135,.06), transparent 60%),
+        linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
+    }
+    svg{width:100%; height:auto; display:block}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap:20px;
+      margin-top:20px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+    }
+    h2{
+      margin:0 0 12px;
+      font-size:20px;
+    }
+    h3{
+      margin:16px 0 8px;
+      font-size:15px;
+      color:#d7def6;
+    }
+    ul{
+      margin:8px 0 0 20px;
+      padding:0;
+      color:var(--muted);
+      line-height:1.55;
+    }
+    li{margin:6px 0}
+    code{
+      background: rgba(255,255,255,.06);
+      padding: 1px 6px;
+      border-radius: 8px;
+      color:#f4f7ff;
+      font-size: .95em;
+    }
+    .pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.1);
+      margin: 4px 6px 0 0;
+      color:#dfe7ff;
+      background: rgba(255,255,255,.04);
+    }
+    .foot{
+      color:var(--muted);
+      margin-top:14px;
+      font-size:13px;
+      line-height:1.5;
+    }
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:4px;
+    }
+    .legend span{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:14px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .dot{
+      width:12px;height:12px;border-radius:50%;
+      display:inline-block;
+    }
+    .small{font-size:13px;color:var(--muted)}
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      h1{font-size:28px}
+      .wrap{padding:20px 14px 40px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Ethereum Staking after Pectra</h1>
+    <div class="sub">
+      New validator lifecycle from deposit transaction to <b>active</b>, with the two waiting stages that matter:
+      <b>pending_deposits</b> and the <b>implicit activation queue</b>.
+    </div>
+
+    <div class="panel diagram">
+      <svg viewBox="0 0 1560 760" role="img" aria-label="Ethereum staking after Pectra flow diagram">
+        <defs>
+          <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+            <path d="M0,0 L12,6 L0,12 z" fill="#8ab4ff"></path>
+          </marker>
+          <filter id="shadow">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity=".25"/>
+          </filter>
+        </defs>
+
+        <!-- Header bands -->
+        <rect x="24" y="20" rx="16" ry="16" width="330" height="44" fill="rgba(138,180,255,.12)" stroke="rgba(138,180,255,.35)"/>
+        <text x="46" y="49" font-size="22" fill="#dfe8ff" font-weight="700">Execution Layer / block inclusion</text>
+
+        <rect x="408" y="20" rx="16" ry="16" width="398" height="44" fill="rgba(255,184,107,.12)" stroke="rgba(255,184,107,.35)"/>
+        <text x="430" y="49" font-size="22" fill="#fff0da" font-weight="700">Consensus pending queue</text>
+
+        <rect x="860" y="20" rx="16" ry="16" width="676" height="44" fill="rgba(126,231,135,.11)" stroke="rgba(126,231,135,.3)"/>
+        <text x="882" y="49" font-size="22" fill="#e8ffeb" font-weight="700">Activation flow</text>
+
+        <!-- Boxes -->
+        <!-- 1 -->
+        <rect x="34" y="102" rx="22" ry="22" width="250" height="140" fill="#182243" stroke="#4d67b0" filter="url(#shadow)"/>
+        <text x="58" y="140" font-size="28" fill="#f3f6ff" font-weight="700">1. Deposit tx mined</text>
+        <text x="58" y="174" font-size="20" fill="#c4d0f3">Tx is included in a valid EL block.</text>
+        <text x="58" y="203" font-size="20" fill="#c4d0f3">If block finalizes, the tx finalizes.</text>
+        <text x="58" y="232" font-size="18" fill="#8ab4ff">Not a queue.</text>
+
+        <!-- 2 -->
+        <rect x="338" y="102" rx="22" ry="22" width="260" height="140" fill="#1f2042" stroke="#d69b46" filter="url(#shadow)"/>
+        <text x="362" y="140" font-size="28" fill="#fff7eb" font-weight="700">2. Appended to</text>
+        <text x="362" y="172" font-size="28" fill="#fff7eb" font-weight="700">pending_deposits</text>
+        <text x="362" y="204" font-size="20" fill="#ffe3bf">Explicit consensus queue</text>
+        <text x="362" y="232" font-size="18" fill="#ffd59d">State list with a storage limit.</text>
+
+        <!-- 3 -->
+        <rect x="652" y="102" rx="22" ry="22" width="290" height="140" fill="#1d243f" stroke="#4d67b0" filter="url(#shadow)"/>
+        <text x="676" y="140" font-size="28" fill="#f3f6ff" font-weight="700">3. Deposit applied</text>
+        <text x="676" y="174" font-size="20" fill="#c4d0f3">process_pending_deposits()</text>
+        <text x="676" y="203" font-size="20" fill="#c4d0f3">creates validator / updates balance</text>
+        <text x="676" y="232" font-size="18" fill="#8ab4ff">Balance visible in CL state now.</text>
+
+        <!-- 4 -->
+        <rect x="996" y="102" rx="22" ry="22" width="290" height="140" fill="#17392b" stroke="#48a56d" filter="url(#shadow)"/>
+        <text x="1020" y="140" font-size="28" fill="#effff2" font-weight="700">4. Enter activation queue</text>
+        <text x="1020" y="174" font-size="20" fill="#d2f5dd">activation_eligibility_epoch set</text>
+        <text x="1020" y="203" font-size="20" fill="#d2f5dd">when registry updates next run</text>
+        <text x="1020" y="232" font-size="18" fill="#9de5b0">Implicit queue, not a list.</text>
+
+        <!-- 5 -->
+        <rect x="1298" y="102" rx="22" ry="22" width="226" height="140" fill="#17392b" stroke="#48a56d" filter="url(#shadow)"/>
+        <text x="1322" y="140" font-size="28" fill="#effff2" font-weight="700">5. Finalization gate</text>
+        <text x="1322" y="174" font-size="20" fill="#d2f5dd">Wait until</text>
+        <text x="1322" y="203" font-size="20" fill="#d2f5dd">finalized_checkpoint.epoch</text>
+        <text x="1322" y="232" font-size="20" fill="#d2f5dd">≥ activation_eligibility_epoch</text>
+
+        <!-- 6 -->
+        <rect x="1118" y="328" rx="22" ry="22" width="290" height="140" fill="#17392b" stroke="#48a56d" filter="url(#shadow)"/>
+        <text x="1142" y="366" font-size="28" fill="#effff2" font-weight="700">6. activation_epoch set</text>
+        <text x="1142" y="400" font-size="20" fill="#d2f5dd">activation_epoch =</text>
+        <text x="1142" y="429" font-size="20" fill="#d2f5dd">compute_activation_exit_epoch(current)</text>
+        <text x="1142" y="458" font-size="18" fill="#9de5b0">Scheduled a few epochs ahead.</text>
+
+        <!-- 7 -->
+        <rect x="1118" y="560" rx="22" ry="22" width="290" height="120" fill="#152f24" stroke="#7ee787" filter="url(#shadow)"/>
+        <text x="1214" y="613" font-size="34" fill="#edfff0" font-weight="800">7. ACTIVE</text>
+        <text x="1170" y="648" font-size="20" fill="#d2f5dd">Validator joins active set and gets duties</text>
+
+        <!-- side note -->
+        <rect x="34" y="304" rx="20" ry="20" width="880" height="376" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.08)"/>
+        <text x="60" y="348" font-size="30" fill="#f4f7ff" font-weight="700">What controls each waiting stage?</text>
+
+        <rect x="60" y="382" rx="16" ry="16" width="390" height="258" fill="rgba(255,184,107,.09)" stroke="rgba(255,184,107,.34)"/>
+        <text x="84" y="420" font-size="24" fill="#fff1dd" font-weight="700">A. pending_deposits queue</text>
+        <text x="84" y="457" font-size="20" fill="#ffe3bf">State object: state.pending_deposits</text>
+        <text x="84" y="493" font-size="20" fill="#ffe3bf">Storage limit: PENDING_DEPOSITS_LIMIT</text>
+        <text x="84" y="522" font-size="20" fill="#ffe3bf">= 134,217,728 entries</text>
+        <text x="84" y="558" font-size="20" fill="#ffe3bf">Processing rate: MAX_PENDING_DEPOSITS_PER_EPOCH</text>
+        <text x="84" y="587" font-size="20" fill="#ffe3bf">= 16 per epoch</text>
+        <text x="84" y="623" font-size="20" fill="#ffe3bf">Also bounded by activation/exit churn budget</text>
+
+        <rect x="476" y="382" rx="16" ry="16" width="408" height="258" fill="rgba(126,231,135,.08)" stroke="rgba(126,231,135,.28)"/>
+        <text x="500" y="420" font-size="24" fill="#edfff0" font-weight="700">B. Activation queue</text>
+        <text x="500" y="457" font-size="20" fill="#d2f5dd">Not a separate list in state</text>
+        <text x="500" y="493" font-size="20" fill="#d2f5dd">Starts when activation_eligibility_epoch is set</text>
+        <text x="500" y="529" font-size="20" fill="#d2f5dd">Then waits for finalization and churn</text>
+        <text x="500" y="565" font-size="20" fill="#d2f5dd">Activation/exit churn cap:</text>
+        <text x="500" y="594" font-size="20" fill="#d2f5dd">MAX_PER_EPOCH_ACTIVATION_EXIT_CHURN_LIMIT</text>
+        <text x="500" y="623" font-size="20" fill="#d2f5dd">= 256 ETH per epoch</text>
+
+        <!-- transition arrows -->
+        <path d="M284 172 L338 172" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M598 172 L652 172" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M942 172 L996 172" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M1286 172 L1298 172" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M1411 242 L1411 328" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M1263 468 L1263 560" stroke="#8ab4ff" stroke-width="6" fill="none" marker-end="url(#arrow)"/>
+
+        <!-- labels on arrows -->
+        <rect x="302" y="135" rx="10" ry="10" width="124" height="28" fill="rgba(10,15,30,.95)" stroke="rgba(138,180,255,.25)"/>
+        <text x="321" y="154" font-size="16" fill="#cfe0ff">CL block processing</text>
+
+        <rect x="684" y="262" rx="12" ry="12" width="220" height="54" fill="rgba(10,15,30,.95)" stroke="rgba(138,180,255,.22)"/>
+        <text x="703" y="284" font-size="16" fill="#cfe0ff">Usually one more epoch</text>
+        <text x="703" y="304" font-size="16" fill="#cfe0ff">before eligibility is set</text>
+
+        <rect x="1316" y="492" rx="12" ry="12" width="168" height="42" fill="rgba(10,15,30,.95)" stroke="rgba(138,180,255,.22)"/>
+        <text x="1335" y="519" font-size="16" fill="#cfe0ff">At activation_epoch</text>
+
+        <!-- field snapshots -->
+        <rect x="962" y="520" rx="16" ry="16" width="128" height="160" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.08)"/>
+        <text x="982" y="550" font-size="18" fill="#dfe8ff" font-weight="700">Field view</text>
+        <text x="982" y="585" font-size="16" fill="#c4d0f3">After deposit applied:</text>
+        <text x="982" y="611" font-size="15" fill="#ffd59d">effective_balance ≥ 32 ETH</text>
+        <text x="982" y="637" font-size="15" fill="#ffd59d">activation_eligibility_epoch</text>
+        <text x="982" y="659" font-size="15" fill="#ffd59d">may still be FAR_FUTURE</text>
+
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span><i class="dot" style="background:#8ab4ff"></i> pipeline/state transition</span>
+      <span><i class="dot" style="background:#ffb86b"></i> explicit queue</span>
+      <span><i class="dot" style="background:#7ee787"></i> activation flow</span>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Operational reading</h2>
+        <ul>
+          <li><b>No extra queue exists before <code>pending_deposits</code>.</b> Once the deposit transaction is included in a valid canonical execution block and processed by the consensus client, it is appended to <code>state.pending_deposits</code>.</li>
+          <li><b><code>pending_deposits</code> is the only explicit pre-activation queue.</b> A deposit can wait there because of finalization constraints, the per-epoch processing cap, or churn budget.</li>
+          <li><b>After the deposit is applied, balance can already be visible while <code>activation_eligibility_epoch</code> is still unset.</b> That is due to epoch-processing order, not a third hidden queue.</li>
+          <li><b>The activation queue is implicit.</b> It starts once <code>activation_eligibility_epoch</code> is set, and then waits for finalization and activation/exit churn before <code>activation_epoch</code> is assigned.</li>
+        </ul>
+
+        <h3>Timing intuition</h3>
+        <ul>
+          <li>Epoch = 32 slots.</li>
+          <li>Slot = 12 seconds.</li>
+          <li>One epoch ≈ 6.4 minutes.</li>
+          <li>After a deposit is applied from <code>pending_deposits</code>, expect up to roughly one more epoch before <code>activation_eligibility_epoch</code> gets set.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Constants shown in this diagram</h2>
+        <div class="pill">MAX_DEPOSIT_REQUESTS_PER_PAYLOAD = 8192</div>
+        <div class="pill">PENDING_DEPOSITS_LIMIT = 134,217,728</div>
+        <div class="pill">MAX_PENDING_DEPOSITS_PER_EPOCH = 16</div>
+        <div class="pill">MIN_ACTIVATION_BALANCE = 32 ETH</div>
+        <div class="pill">MAX_PER_EPOCH_ACTIVATION_EXIT_CHURN_LIMIT = 256 ETH</div>
+        <div class="pill">MAX_SEED_LOOKAHEAD = 4 epochs</div>
+
+        <h3>Clean wording for your page</h3>
+        <ul>
+          <li><b>Stage 1:</b> EL inclusion. Not a queue.</li>
+          <li><b>Stage 2:</b> <code>pending_deposits</code>. Explicit consensus queue.</li>
+          <li><b>Stage 3:</b> activation queue. Implicit queue based on validator fields and finalization/churn.</li>
+        </ul>
+
+        <div class="foot">
+          This page is intentionally self-contained and static, so it can be hosted directly on GitHub Pages without any build step.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
