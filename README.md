@@ -39,7 +39,6 @@ There are **2 waiting stages that matter**:
 
   <rect x="24" y="24" width="1152" height="1402" rx="24" fill="#ffffff" stroke="#dbe4ee" stroke-width="2"/>
 
-  <!-- Section pills -->
   <rect x="70" y="60" width="260" height="42" rx="14" fill="#e9f2ff" stroke="#9ec5ff" stroke-width="2"/>
   <text x="92" y="88" font-size="22" fill="#1d4ed8" font-family="Arial, sans-serif" font-weight="700">Execution inclusion</text>
 
@@ -49,7 +48,6 @@ There are **2 waiting stages that matter**:
   <rect x="730" y="60" width="370" height="42" rx="14" fill="#ebfff2" stroke="#9fe3b4" stroke-width="2"/>
   <text x="752" y="88" font-size="22" fill="#15803d" font-family="Arial, sans-serif" font-weight="700">Activation flow</text>
 
-  <!-- Top flow -->
   <rect x="70" y="140" width="250" height="150" rx="18" fill="#ffffff" stroke="#c8d6e5" stroke-width="2"/>
   <text x="92" y="182" font-size="27" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">1. Deposit tx included</text>
   <text x="92" y="222" font-size="18" fill="#475569" font-family="Arial, sans-serif">Tx is in a valid EL block</text>
@@ -79,7 +77,6 @@ There are **2 waiting stages that matter**:
   <path d="M625 215 L660 215" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
   <path d="M910 215 L945 215" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
 
-  <!-- Vertical activation column -->
   <rect x="860" y="380" width="280" height="120" rx="18" fill="#ffffff" stroke="#8ee1a9" stroke-width="2"/>
   <text x="885" y="425" font-size="27" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">5. Wait</text>
   <text x="885" y="463" font-size="18" fill="#475569" font-family="Arial, sans-serif">Need finalization</text>
@@ -97,7 +94,6 @@ There are **2 waiting stages that matter**:
   <path d="M1000 500 L1000 560" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
   <path d="M1000 680 L1000 740" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrow)"/>
 
-  <!-- Bottom explanation cards -->
   <rect x="70" y="380" width="740" height="320" rx="20" fill="#fff5ee" stroke="#ffc48d" stroke-width="2"/>
   <text x="100" y="432" font-size="34" fill="#b45309" font-family="Arial, sans-serif" font-weight="700">A. pending_deposits</text>
   <text x="100" y="484" font-size="22" fill="#9a3412" font-family="Arial, sans-serif">• Explicit queue: state.pending_deposits</text>
@@ -114,7 +110,6 @@ There are **2 waiting stages that matter**:
   <text x="100" y="1008" font-size="22" fill="#166534" font-family="Arial, sans-serif">• Throughput cap: 256 ETH per epoch</text>
   <text x="100" y="1056" font-size="22" fill="#166534" font-family="Arial, sans-serif">• Roughly 8 × 32 ETH validators at cap</text>
 
-  <!-- Timing note -->
   <rect x="860" y="910" width="280" height="170" rx="18" fill="#f8fbff" stroke="#c8d6e5" stroke-width="2"/>
   <text x="885" y="950" font-size="22" fill="#334155" font-family="Arial, sans-serif" font-weight="700">Timing note</text>
   <text x="885" y="992" font-size="18" fill="#334155" font-family="Arial, sans-serif">Deposit can be applied first,</text>
@@ -183,3 +178,175 @@ Once eligible, the validator is assigned `activation_epoch`.
 
 ### 7) Active validator
 When the chain reaches `activation_epoch`, the validator becomes active and starts receiving duties.
+
+---
+
+# Partial Deposit / Top-Up of an Existing Validator
+
+For a **top-up** or **partial deposit** into an **already existing validator**, the queue model is simpler.
+
+## Short answer
+
+A top-up follows the **same deposit path** as a new validator deposit until the point where the deposit is applied:
+
+```text
+EL top-up tx included
+→ appended to pending_deposits
+→ process_pending_deposits()
+→ existing validator found by pubkey
+→ validator balance increased
+```
+
+There is **no separate top-up queue**.
+
+The explicit queue is still:
+
+- **`pending_deposits`**
+
+After the top-up is applied, there is **no new activation queue** if the validator is already active. The balance is simply added to the existing validator state.
+
+---
+
+## Top-up diagram
+
+<div style="overflow-x:auto; margin:20px 0;">
+<svg viewBox="0 0 1600 920" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ethereum top-up flow after Pectra">
+  <defs>
+    <marker id="arrowTopup" markerWidth="10" markerHeight="10" refX="8.5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="24" y="24" width="1552" height="872" rx="24" fill="#ffffff" stroke="#dbe4ee" stroke-width="2"/>
+
+  <rect x="76" y="60" width="250" height="42" rx="14" fill="#e9f2ff" stroke="#9ec5ff" stroke-width="2"/>
+  <text x="98" y="88" font-size="22" fill="#1d4ed8" font-family="Arial, sans-serif" font-weight="700">Execution inclusion</text>
+
+  <rect x="376" y="60" width="290" height="42" rx="14" fill="#fff1e7" stroke="#ffc48d" stroke-width="2"/>
+  <text x="398" y="88" font-size="22" fill="#c2410c" font-family="Arial, sans-serif" font-weight="700">Shared deposit queue</text>
+
+  <rect x="716" y="60" width="780" height="42" rx="14" fill="#ebfff2" stroke="#9fe3b4" stroke-width="2"/>
+  <text x="738" y="88" font-size="22" fill="#15803d" font-family="Arial, sans-serif" font-weight="700">Existing validator state update</text>
+
+  <rect x="76" y="150" width="250" height="145" rx="18" fill="#ffffff" stroke="#c8d6e5" stroke-width="2"/>
+  <text x="98" y="190" font-size="26" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">1. Top-up tx included</text>
+  <text x="98" y="228" font-size="18" fill="#475569" font-family="Arial, sans-serif">Transaction lands in an EL block</text>
+  <text x="98" y="256" font-size="18" fill="#475569" font-family="Arial, sans-serif">Request becomes processable by CL</text>
+  <text x="98" y="280" font-size="18" fill="#2563eb" font-family="Arial, sans-serif">Not a queue</text>
+
+  <rect x="376" y="150" width="290" height="145" rx="18" fill="#ffffff" stroke="#ffb672" stroke-width="2"/>
+  <text x="398" y="190" font-size="26" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">2. pending_deposits</text>
+  <text x="398" y="228" font-size="18" fill="#475569" font-family="Arial, sans-serif">Same explicit queue as new deposits</text>
+  <text x="398" y="256" font-size="18" fill="#475569" font-family="Arial, sans-serif">No separate top-up queue exists</text>
+  <text x="398" y="280" font-size="18" fill="#ea580c" font-family="Arial, sans-serif">Dequeued by epoch processing</text>
+
+  <rect x="716" y="150" width="290" height="145" rx="18" fill="#ffffff" stroke="#c8d6e5" stroke-width="2"/>
+  <text x="738" y="190" font-size="26" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">3. Find validator</text>
+  <text x="738" y="228" font-size="18" fill="#475569" font-family="Arial, sans-serif">Pubkey already exists in state</text>
+  <text x="738" y="256" font-size="18" fill="#475569" font-family="Arial, sans-serif">No new validator is created</text>
+
+  <rect x="1056" y="150" width="250" height="145" rx="18" fill="#ffffff" stroke="#8ee1a9" stroke-width="2"/>
+  <text x="1078" y="190" font-size="26" fill="#0f172a" font-family="Arial, sans-serif" font-weight="700">4. Balance increased</text>
+  <text x="1078" y="228" font-size="18" fill="#475569" font-family="Arial, sans-serif">increase_balance(...)</text>
+  <text x="1078" y="256" font-size="18" fill="#475569" font-family="Arial, sans-serif">Existing validator gets the ETH</text>
+
+  <rect x="1356" y="150" width="170" height="145" rx="18" fill="#ebfff2" stroke="#8ee1a9" stroke-width="2"/>
+  <text x="1388" y="205" font-size="24" fill="#15803d" font-family="Arial, sans-serif" font-weight="800">5. Done</text>
+  <text x="1378" y="240" font-size="18" fill="#166534" font-family="Arial, sans-serif">No new activation</text>
+  <text x="1382" y="266" font-size="18" fill="#166534" font-family="Arial, sans-serif">queue if already</text>
+  <text x="1404" y="290" font-size="18" fill="#166534" font-family="Arial, sans-serif">active</text>
+
+  <path d="M326 224 L376 224" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrowTopup)"/>
+  <path d="M666 224 L716 224" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrowTopup)"/>
+  <path d="M1006 224 L1056 224" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrowTopup)"/>
+  <path d="M1306 224 L1356 224" stroke="#7b8ca3" stroke-width="4" fill="none" marker-end="url(#arrowTopup)"/>
+
+  <rect x="76" y="370" width="500" height="230" rx="20" fill="#fff5ee" stroke="#ffc48d" stroke-width="2"/>
+  <text x="106" y="420" font-size="34" fill="#b45309" font-family="Arial, sans-serif" font-weight="700">Queue used by top-ups</text>
+  <text x="106" y="472" font-size="22" fill="#9a3412" font-family="Arial, sans-serif">• Explicit queue: state.pending_deposits</text>
+  <text x="106" y="520" font-size="22" fill="#9a3412" font-family="Arial, sans-serif">• Storage limit: 134,217,728</text>
+  <text x="106" y="568" font-size="22" fill="#9a3412" font-family="Arial, sans-serif">• Processing cap: 16 per epoch</text>
+
+  <rect x="616" y="370" width="430" height="230" rx="20" fill="#f8fbff" stroke="#c8d6e5" stroke-width="2"/>
+  <text x="646" y="420" font-size="34" fill="#334155" font-family="Arial, sans-serif" font-weight="700">What changes in state</text>
+  <text x="646" y="472" font-size="22" fill="#334155" font-family="Arial, sans-serif">• Existing validator is matched by pubkey</text>
+  <text x="646" y="520" font-size="22" fill="#334155" font-family="Arial, sans-serif">• Balance is increased</text>
+  <text x="646" y="568" font-size="22" fill="#334155" font-family="Arial, sans-serif">• No new validator record is created</text>
+
+  <rect x="1086" y="370" width="440" height="230" rx="20" fill="#effdf3" stroke="#9fe3b4" stroke-width="2"/>
+  <text x="1116" y="420" font-size="34" fill="#15803d" font-family="Arial, sans-serif" font-weight="700">Activation effect</text>
+  <text x="1116" y="472" font-size="22" fill="#166534" font-family="Arial, sans-serif">• Active validator: no new activation queue</text>
+  <text x="1116" y="520" font-size="22" fill="#166534" font-family="Arial, sans-serif">• Inactive validator: top-up can help reach</text>
+  <text x="1116" y="548" font-size="22" fill="#166534" font-family="Arial, sans-serif">  the activation threshold</text>
+  <text x="1116" y="596" font-size="22" fill="#166534" font-family="Arial, sans-serif">• Deposit processing still shares churn limits</text>
+
+  <rect x="76" y="660" width="1450" height="170" rx="20" fill="#f8fbff" stroke="#c8d6e5" stroke-width="2"/>
+  <text x="106" y="708" font-size="28" fill="#334155" font-family="Arial, sans-serif" font-weight="700">Operational note</text>
+  <text x="106" y="752" font-size="22" fill="#334155" font-family="Arial, sans-serif">Top-ups become much more useful for compounding 0x02 validators, because their effective balance cap can go above 32 ETH</text>
+  <text x="106" y="788" font-size="22" fill="#334155" font-family="Arial, sans-serif">up to 2048 ETH. For legacy 0x01 validators, excess above the cap does not make them heavier than a normal 32 ETH validator.</text>
+</svg>
+</div>
+
+---
+
+## Top-up state transitions
+
+### 1) Execution inclusion
+The top-up transaction is included in an execution block.
+
+- This is not a queue.
+- Once the block is processed by the consensus client, the request is appended to `state.pending_deposits`.
+
+### 2) `pending_deposits`
+Top-ups use the same explicit queue as new validator deposits.
+
+- There is no separate top-up queue.
+- The same queue storage and dequeue limits apply.
+
+### 3) Existing validator lookup
+When the pending deposit is processed, the consensus state checks whether the pubkey already exists.
+
+- If it exists, the validator is updated.
+- If it does not exist, a new validator can be created instead.
+
+### 4) Balance increase
+For an existing validator, the top-up is applied as a balance increase.
+
+```text
+increase_balance(state, validator_index, amount)
+```
+
+### 5) Activation consequences
+For an **already active** validator:
+
+- the top-up does **not** create a new activation queue entry
+- it simply raises the validator balance
+
+For a validator that is **not yet active**:
+
+- a top-up can help it reach the minimum activation balance
+- after that, the normal activation path applies
+
+---
+
+## Top-up limits that still apply
+
+The same deposit-side limits apply to top-ups:
+
+- `MAX_DEPOSIT_REQUESTS_PER_PAYLOAD = 8192`
+- `PENDING_DEPOSITS_LIMIT = 134,217,728`
+- `MAX_PENDING_DEPOSITS_PER_EPOCH = 16`
+
+Top-ups are also subject to the same balance-based churn accounting used by Electra deposit processing.
+
+---
+
+## Operational note: 0x01 vs 0x02
+
+Top-ups matter much more for **compounding (`0x02`) validators** than for normal `0x01` validators.
+
+- `0x01` validators keep the normal effective-balance cap around **32 ETH**
+- `0x02` compounding validators can grow their effective balance up to **2048 ETH**
+- after Pectra, new deposits / top-ups must be at least **1 ETH**
+
+So the queue is the same, but the **effect** of the top-up is different depending on validator type.
